@@ -81,8 +81,8 @@ fi
 rm "${FILE}"
 
 #### Begin of core worker ####
-
-bash "$WDIR/tools/worker.sh"
+ROM=${echo "$VERSION" | cut -d'/' -f1}
+bash "$WDIR/tools/worker.sh" $ROM
 
 #### Begin of Magisk Boot Image Patcher ####
 
