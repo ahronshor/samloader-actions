@@ -52,10 +52,9 @@ curl -s "$CSV_URL" | while IFS=, read -r csc_name csc_code; do
             echo -e "${LIGHT_BLUE}[i] Version ${VERSION} does not match ${MY_VER}. Continuing...\n"
         fi
     fi
-
 done 
 
-echo -e "${MINT_GREEN}[+] Attempting to Download...\n ${RESET}"
+echo -e "${MINT_GREEN}[+] Attempting to Download Version ${VERSION} csc ${CSC} imei ${IMEI} ...\n ${RESET}"
 
 if [  -d "$WDIR/Downloads" ];then
     rm -rf Downloads output Magisk Dist
