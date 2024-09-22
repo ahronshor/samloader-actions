@@ -44,6 +44,7 @@ curl -s "$CSV_URL" | while IFS=, read -r csc_name csc_code; do
     else
         CSC=$csc_name
         echo -e "${LIGHT_YELLOW}[i] Update found for ${csc_name}: ${BOLD_WHITE}${VERSION}${RESET}\n"
+        break  # Exit the loop after finding the first update
     fi
 
 done 
