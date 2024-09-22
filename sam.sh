@@ -34,9 +34,9 @@ echo -e "====================================\n"
 CSV_URL="https://raw.githubusercontent.com/zacharee/SamloaderKotlin/853438372672f6863d2d55914bd0a016c58ba064/common/src/commonMain/moko-resources/files/cscs.csv"
 
 # Read the CSV and loop through each line (ignoring the header)
-curl -s "$CSV_URL" | while IFS=, read -r csc_name csc_code; do
+while IFS=, read -r csc_name csc_code; do
     if [[ "$csc_name" == "csc" ]]; then
-        continue  # Skip header
+        csc_name=ILO
     fi
 
     echo -e "${MINT_GREEN}[+] Fetching Latest Firmware for CSC: ${csc_name} ...\n${RESET}"
@@ -52,9 +52,9 @@ curl -s "$CSV_URL" | while IFS=, read -r csc_name csc_code; do
             echo -e "${LIGHT_BLUE}[i] Version ${VERSION} does not match ${MY_VER}. Continuing...\n"
         fi
     fi
-done 
+done < <(curl -s "$CSV_URL")  # Process substitution
 
-echo -e "${MINT_GREEN}[+] Attempting to Download Version ${VERSION} csc ${CSC} imei ${IMEI} ...\n ${RESET}"
+echo -e "${MINT_GREEN}[+] Attempting to Download Version ${VERSION} csc ${CSC} imei ${IMEI} ...\n${RESET}"
 
 if [  -d "$WDIR/Downloads" ];then
     rm -rf Downloads output Magisk Dist
