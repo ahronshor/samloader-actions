@@ -45,7 +45,8 @@ curl -s "$CSV_URL" | while IFS=, read -r csc_name csc_code; do
     else
         # Check if VERSION contains MY_VER using regex
         if [[ "$VERSION" =~ $MY_VER ]]; then
-            echo -e "${LIGHT_GREEN}[✓] Version ${VERSION} matches the required ${MY_VER}. Stopping...${RESET}\n"
+            CSC=${csc_name}
+            echo -e "${LIGHT_GREEN}[✓] Version ${VERSION} matches the required ${MY_VER}. using ${CSC} ...${RESET}\n"
             break  # Break the loop if the version matches the pattern
         else
             echo -e "${LIGHT_BLUE}[i] Version ${VERSION} does not match ${MY_VER}. Continuing...\n"
