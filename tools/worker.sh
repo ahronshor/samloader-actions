@@ -82,13 +82,13 @@ stock_files(){
 
 	fi
 	cd "$WDIR/output" ; mkdir "${MODEL}" ; mv "${BASE_TAR_NAME}" "${MODEL}"
-	export BASE_TAR_NAME="${MODEL}-Magisk-files.tar"
+	export BASE_TAR_NAME="${MODEL}-${ROM_NAME}-8-f85.tar"
 	tar -cvf "${BASE_TAR_NAME}" "${MODEL}"
-	xz -9 --threads=0 "${BASE_TAR_NAME}"
-	mv "${BASE_TAR_NAME}.xz" "$WDIR/Dist"
-	echo -e "\n${LIGHT_YELLOW}[i] Zip file created: ${BASE_TAR_NAME}.xz${RESET}\n"
+	#xz -9 --threads=0 "${BASE_TAR_NAME}"
+	mv "${BASE_TAR_NAME}" "$WDIR/Dist"
+	echo -e "\n${LIGHT_YELLOW}[i] Zip file created: ${BASE_TAR_NAME}${RESET}\n"
 }
-
+ROM_NAME=$1
 extract
 is_dynamic
 stock_files
