@@ -24,10 +24,11 @@ fi
 
 export BASE_TAR_NAME="Magisk-Patch-Me-${MODEL}.tar"
 
+MY_VER=$CSC
 echo -e "====================================\n"
 echo -e "${LIGHT_YELLOW}[+] Model: ${BOLD_WHITE}${MODEL}${RESET}\n${LIGHT_YELLOW}"
 echo -e "${LIGHT_YELLOW}[+] IMEI: ${BOLD_WHITE}${IMEI:0:9}XXXXXX${RESET}\n${LIGHT_YELLOW}"
-#echo -e "${LIGHT_YELLOW}[+] CSC: ${BOLD_WHITE}${CSC}${RESET}\n${LIGHT_YELLOW}${RESET}"
+echo -e "${LIGHT_YELLOW}[+] MY_VER: ${BOLD_WHITE}${MY_VER}${RESET}\n${LIGHT_YELLOW}${RESET}"
 echo -e "====================================\n"
 
 CSV_URL="https://raw.githubusercontent.com/zacharee/SamloaderKotlin/853438372672f6863d2d55914bd0a016c58ba064/common/src/commonMain/moko-resources/files/cscs.csv"
@@ -42,9 +43,13 @@ curl -s "$CSV_URL" | while IFS=, read -r csc_name csc_code; do
     if ! VERSION=$(python3 -m samloader -m "${MODEL}" -r "${csc_name}" -i "${IMEI}" checkupdate 2>/dev/null); then
         echo -e "\n${RED}[x] Model or region not found for ${csc_name}  (403) ${RESET}\n"
     else
-        CSC=$csc_name
-        echo -e "${LIGHT_YELLOW}[i] Update found for ${csc_name}: ${BOLD_WHITE}${VERSION}${RESET}\n"
-        break  # Exit the loop after finding the first update
+        # Check if VERSION contains MY_VER using regex
+        if [[ "$VERSION" =~ $MY_VER ]]; then
+            echo -e "${LIGHT_GREEN}[✓] Version ${VERSION} matches the required ${MY_VER}. Stopping...${RESET}\n"
+            break  # Break the loop if the version matches the pattern
+        else
+            echo -e "${LIGHT_BLUE}[i] Version ${VERSION} does not match ${MY_VER}. Continuing...\n"
+        fi
     fi
 
 done 
