@@ -27,16 +27,26 @@ export BASE_TAR_NAME="Magisk-Patch-Me-${MODEL}.tar"
 echo -e "====================================\n"
 echo -e "${LIGHT_YELLOW}[+] Model: ${BOLD_WHITE}${MODEL}${RESET}\n${LIGHT_YELLOW}"
 echo -e "${LIGHT_YELLOW}[+] IMEI: ${BOLD_WHITE}${IMEI:0:9}XXXXXX${RESET}\n${LIGHT_YELLOW}"
-echo -e "${LIGHT_YELLOW}[+] CSC: ${BOLD_WHITE}${CSC}${RESET}\n${LIGHT_YELLOW}${RESET}"
+#echo -e "${LIGHT_YELLOW}[+] CSC: ${BOLD_WHITE}${CSC}${RESET}\n${LIGHT_YELLOW}${RESET}"
 echo -e "====================================\n"
 
-echo -e "${MINT_GREEN}[+] Fetching Latest Firmware...\n${RESET}"
-if ! VERSION=$(python3 -m samloader -m "${MODEL}" -r "${CSC}" -i "${IMEI}" checkupdate 2>/dev/null); then
-    echo -e "\n${RED}[x] Model or region not found (403) ${RESET}\n"
-    exit 1
-else
-    echo -e "${LIGHT_YELLOW}[i] Update found: ${BOLD_WHITE}${VERSION}${RESET}\n${LIGHT_YELLOW}${RESET}"
-fi
+CSV_URL="https://raw.githubusercontent.com/zacharee/SamloaderKotlin/853438372672f6863d2d55914bd0a016c58ba064/common/src/commonMain/moko-resources/files/cscs.csv"
+
+# Read the CSV and loop through each line (ignoring the header)
+curl -s "$CSV_URL" | while IFS=, read -r csc_name csc_code; do
+    if [[ "$csc_name" == "csc" ]]; then
+        continue  # Skip header
+    fi
+
+    echo -e "${MINT_GREEN}[+] Fetching Latest Firmware for CSC: ${csc_name} ...\n${RESET}"
+    if ! VERSION=$(python3 -m samloader -m "${MODEL}" -r "${csc_name}" -i "${IMEI}" checkupdate 2>/dev/null); then
+        echo -e "\n${RED}[x] Model or region not found for ${csc_name}  (403) ${RESET}\n"
+    else
+        CSC=$csc_name
+        echo -e "${LIGHT_YELLOW}[i] Update found for ${csc_name}: ${BOLD_WHITE}${VERSION}${RESET}\n"
+    fi
+
+done 
 
 echo -e "${MINT_GREEN}[+] Attempting to Download...\n ${RESET}"
 
