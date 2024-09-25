@@ -59,19 +59,3 @@ jobs:
         env:
           DO_SPACES_KEY: ${{ secrets.DO_SPACES_KEY }}
           DO_SPACES_SECRET: ${{ secrets.DO_SPACES_SECRET }}
-
-      - name: Upload to Telegram
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
-          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          document: Dist/${{ github.event.inputs.model_name }}*.xz 
-          format: html
-          disable_web_page_preview: false
-          message: |
-            <b>New Dump 📂..!</b>
-
-            <b>Device :</b> ${{ env.MODEL }}                       
-            <b>From Repository:</b> <a href="https://github.com/${{ github.repository }}">${{ github.repository }}</a>
-            
-            <b>Powered by:</b> <a href="https://github.com/ravindu644/samloader-actions">samloader-actions</a>  
