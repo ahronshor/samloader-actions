@@ -8,9 +8,9 @@ on:
         required: true       
       imei:
         description: 'Your IMEI'
-        required: true         
-      csc:
-        description: 'Your CSC (Samsung Region code)'
+        required: true          
+      version:
+        description: 'Your Version or .*'
         required: true              
 
 jobs:
@@ -28,13 +28,13 @@ jobs:
       - name: Install packages & setup
         run: |
           sudo apt update -y > /dev/null 2>&1
-          sudo apt install python3 python-is-python3 -y > /dev/null 2>&1 
+          sudo apt install python3 python-is-python3 awscli -y > /dev/null 2>&1 
           
       - name: Set environment variables
         run: |
           echo "MODEL=${{ github.event.inputs.model }}" >> $GITHUB_ENV
           echo "IMEI=${{ github.event.inputs.imei }}" >> $GITHUB_ENV
-          echo "CSC=${{ github.event.inputs.csc }}" >> $GITHUB_ENV          
+          echo "MY_VER=${{ github.event.inputs.version }}" >> $GITHUB_ENV          
           
       - name: Running samloader-actions
         run: |
@@ -44,7 +44,17 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: "Stock files - ${{ env.MODEL }}"
-          path: Dist/${{ github.event.inputs.model }}*.tar                 
+          path: Dist/${{ github.event.inputs.model }}*.tar     
+
+      - name: Upload to DigitalOcean Spaces
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.DO_SPACES_KEY }}
+          aws configure set aws_secret_access_key ${{ secrets.DO_SPACES_SECRET }}
+          aws configure set default.region ams3
+          aws s3 cp Dist/${{ github.event.inputs.model }}*.tar ${{ secrets.DO_BUCKET_PATH }} --endpoint-url https://ams3.digitaloceanspaces.com
+        env:
+          DO_SPACES_KEY: ${{ secrets.DO_SPACES_KEY }}
+          DO_SPACES_SECRET: ${{ secrets.DO_SPACES_SECRET }}
 
       - name: Upload to Telegram
         uses: appleboy/telegram-action@master
@@ -60,4 +70,4 @@ jobs:
             <b>Device :</b> ${{ env.MODEL }}                       
             <b>From Repository:</b> <a href="https://github.com/${{ github.repository }}">${{ github.repository }}</a>
             
-            <b>Powered by:</b> <a href="https://github.com/ravindu644/samloader-actions">samloader-actions</a>            
+            <b>Powered by:</b> <a href="https://github.com/ravindu644/samloader-actions">samloader-actions</a>  

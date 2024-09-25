@@ -24,7 +24,6 @@ fi
 
 export BASE_TAR_NAME="Magisk-Patch-Me-${MODEL}.tar"
 
-MY_VER=$CSC
 echo -e "====================================\n"
 echo -e "${LIGHT_YELLOW}[+] Model: ${BOLD_WHITE}${MODEL}${RESET}\n${LIGHT_YELLOW}"
 echo -e "${LIGHT_YELLOW}[+] IMEI: ${BOLD_WHITE}${IMEI:0:9}XXXXXX${RESET}\n${LIGHT_YELLOW}"
@@ -82,6 +81,8 @@ rm "${FILE}"
 
 #### Begin of core worker ####
 ROM=${echo "$VERSION" | cut -d'/' -f1}
+echo -e "\n${MINT_GREEN}[+] Extracting Firmware for: ${ROM} ...\n${RESET}\n"
+
 bash "$WDIR/tools/worker.sh" $ROM
 
 #### Begin of Magisk Boot Image Patcher ####
