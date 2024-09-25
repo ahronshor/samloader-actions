@@ -5,7 +5,10 @@ on:
     inputs:      
       model:
         description: 'Your Model Number'
-        required: true       
+        required: true             
+      model_name:
+        description: 'Your model name in lowercase'
+        required: true     
       imei:
         description: 'Your IMEI'
         required: true          
@@ -34,7 +37,8 @@ jobs:
         run: |
           echo "MODEL=${{ github.event.inputs.model }}" >> $GITHUB_ENV
           echo "IMEI=${{ github.event.inputs.imei }}" >> $GITHUB_ENV
-          echo "MY_VER=${{ github.event.inputs.version }}" >> $GITHUB_ENV          
+          echo "MY_VER=${{ github.event.inputs.version }}" >> $GITHUB_ENV  
+          echo "MODEL_NAME=${{ github.event.inputs.model_name }}" >> $GITHUB_ENV          
           
       - name: Running samloader-actions
         run: |
@@ -51,7 +55,7 @@ jobs:
           aws configure set aws_access_key_id ${{ secrets.DO_SPACES_KEY }}
           aws configure set aws_secret_access_key ${{ secrets.DO_SPACES_SECRET }}
           aws configure set default.region ams3
-          aws s3 cp Dist/${{ github.event.inputs.model }}*.tar ${{ secrets.DO_BUCKET_PATH }} --endpoint-url https://ams3.digitaloceanspaces.com
+          aws s3 cp Dist/${{ github.event.inputs.model_name }}*.tar ${{ secrets.DO_BUCKET_PATH }} --endpoint-url https://ams3.digitaloceanspaces.com
         env:
           DO_SPACES_KEY: ${{ secrets.DO_SPACES_KEY }}
           DO_SPACES_SECRET: ${{ secrets.DO_SPACES_SECRET }}
@@ -61,7 +65,7 @@ jobs:
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          document: Dist/${{ github.event.inputs.model }}*.xz 
+          document: Dist/${{ github.event.inputs.model_name }}*.xz 
           format: html
           disable_web_page_preview: false
           message: |

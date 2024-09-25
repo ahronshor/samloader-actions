@@ -82,9 +82,7 @@ stock_files(){
 
 	fi
 	cd "$WDIR/output" ; mkdir "${MODEL}" ; mv "${BASE_TAR_NAME}" "${MODEL}"
-	lower_case="${MODEL:l}"
-	model_name="${lower_case#*-}"
-	export BASE_TAR_NAME="${model_name}-${ROM_NAME}-8-f85.tar"
+	export BASE_TAR_NAME="${MODEL_NAME}-${ROM_NAME}-8-f85.tar"
 	tar -cvf "${BASE_TAR_NAME}" "${MODEL}"
 	#xz -9 --threads=0 "${BASE_TAR_NAME}"
 	mv "${BASE_TAR_NAME}" "$WDIR/Dist"
