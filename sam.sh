@@ -55,6 +55,9 @@ done < <(curl -s "$CSV_URL")  # Process substitution
 
 echo -e "${MINT_GREEN}[+] Attempting to Download Version ${VERSION} csc ${CSC} imei ${IMEI} ...\n${RESET}"
 
+ROM=`echo "$VERSION" | cut -d'/' -f1`
+echo -e "${LIGHT_YELLOW}[i] ROM: ${ROM} ${RESET}\n"
+
 if [  -d "$WDIR/Downloads" ];then
     rm -rf Downloads output Magisk Dist
 fi
@@ -80,7 +83,6 @@ fi
 rm "${FILE}"
 
 #### Begin of core worker ####
-ROM=${echo "$VERSION" | cut -d'/' -f1}
 echo -e "\n${MINT_GREEN}[+] Extracting Firmware for: ${ROM} ...\n${RESET}\n"
 
 bash "$WDIR/tools/worker.sh" $ROM
