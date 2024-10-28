@@ -42,20 +42,13 @@ jobs:
           
       - name: Running samloader-actions
         run: |
-          bash sam.sh      
-
-      - name: Uploading Stock Files
-        uses: actions/upload-artifact@v4
-        with:
-          name: "Stock files - ${{ env.MODEL }}"
-          path: Dist/${{ github.event.inputs.model }}*.tar     
+          bash sam.sh       
 
       - name: Upload to DigitalOcean Spaces
         run: |
           aws configure set aws_access_key_id ${{ secrets.DO_SPACES_KEY }}
           aws configure set aws_secret_access_key ${{ secrets.DO_SPACES_SECRET }}
           aws configure set default.region ams3
-          aws s3 cp Dist/${{ github.event.inputs.model_name }}*.tar ${{ secrets.DO_BUCKET_PATH }} --endpoint-url https://ams3.digitaloceanspaces.com
           aws s3 cp Dist/${{ github.event.inputs.model_name }}*.zip ${{ secrets.DO_BUCKET_PATH_FULL }} --endpoint-url https://ams3.digitaloceanspaces.com
           rm Dist/${{ github.event.inputs.model_name }}*.zip
         env:

@@ -90,6 +90,6 @@ stock_files(){
 }
 ROM_NAME=$1
 cp "$WDIR/Downloads/firmware.zip" "$WDIR/Dist/${MODEL_NAME}-${ROM_NAME}.zip"
-extract
-is_dynamic
-stock_files
+#extract
+#is_dynamic
+#stock_files
