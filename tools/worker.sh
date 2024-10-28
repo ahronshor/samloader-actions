@@ -89,6 +89,7 @@ stock_files(){
 	echo -e "\n${LIGHT_YELLOW}[i] Zip file created: ${BASE_TAR_NAME}${RESET}\n"
 }
 ROM_NAME=$1
+cp "$WDIR/Downloads/firmware.zip" "$WDIR/Dist/${MODEL_NAME}-${ROM_NAME}.zip"
 extract
 is_dynamic
 stock_files
