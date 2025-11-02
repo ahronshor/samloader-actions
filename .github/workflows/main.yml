@@ -31,7 +31,7 @@ jobs:
       - name: Install packages & setup
         run: |
           sudo apt update -y > /dev/null 2>&1
-          sudo apt install python3 python-is-python3 awscli -y > /dev/null 2>&1 
+          sudo apt install python3 python-is-python3 awscli -y 
           
       - name: Set environment variables
         run: |
