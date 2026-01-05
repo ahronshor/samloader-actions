@@ -3,18 +3,13 @@ name: Create a zip for Magisk
 on:
   workflow_dispatch:
     inputs:      
-      model:
-        description: 'Your Model Number'
-        required: true             
-      model_name:
-        description: 'Your model name in lowercase'
-        required: true     
+      gnsf_command:
+        description: 'פקודת GNSF מלאה (ללא IMEI)'
+        required: true 
+        default: './gnsf.py -m SM-X135G -r XFV -i YOUR_IMEI download -v "X135GDXU1AYH5/X135GOJM1AYI1/X135GDXU1AYH5/X135GDXU1AYH5" -O ./downloads'
       imei:
         description: 'Your IMEI'
         required: true          
-      version:
-        description: 'Your Version or .*'
-        required: true              
 
 jobs:
   samloader-actions:
@@ -31,26 +26,38 @@ jobs:
       - name: Install packages & setup
         run: |
           sudo apt update -y > /dev/null 2>&1
-          sudo apt install python3 python-is-python3 awscli -y > /dev/null 2>&1 
+          sudo apt install python3 python3-pip python-is-python3 awscli simg2img lz4 openssl unzip -y > /dev/null 2>&1
+          
+          # Upgrade pip and install Python dependencies for gnsf.py
+          python3 -m pip install --upgrade pip > /dev/null 2>&1
+          pip3 install requests pycryptodome tqdm --no-cache-dir
+          
+          # Verify gnsf.py can be executed
+          chmod +x gnsf.py gnsf.sh
+          python3 gnsf.py --version
           
       - name: Set environment variables
         run: |
-          echo "MODEL=${{ github.event.inputs.model }}" >> $GITHUB_ENV
+          echo "GNSF_COMMAND=${{ github.event.inputs.gnsf_command }}" >> $GITHUB_ENV
           echo "IMEI=${{ github.event.inputs.imei }}" >> $GITHUB_ENV
-          echo "MY_VER=${{ github.event.inputs.version }}" >> $GITHUB_ENV  
-          echo "MODEL_NAME=${{ github.event.inputs.model_name }}" >> $GITHUB_ENV          
           
-      - name: Running samloader-actions
+      - name: Running gnsf firmware download
         run: |
-          bash sam.sh       
+          bash gnsf.sh       
 
       - name: Upload to DigitalOcean Spaces
         run: |
           aws configure set aws_access_key_id ${{ secrets.DO_SPACES_KEY }}
           aws configure set aws_secret_access_key ${{ secrets.DO_SPACES_SECRET }}
           aws configure set default.region ams3
-          aws s3 cp Dist/${{ github.event.inputs.model_name }}*.zip ${{ secrets.DO_BUCKET_PATH_FULL }} --endpoint-url https://ams3.digitaloceanspaces.com
-          rm Dist/${{ github.event.inputs.model_name }}*.zip
+          
+          # Upload all files from Dist directory (zip and tar)
+          for file in Dist/*; do
+            if [ -f "$file" ]; then
+              aws s3 cp "$file" ${{ secrets.DO_BUCKET_PATH_FULL }} --endpoint-url https://ams3.digitaloceanspaces.com
+              echo "Uploaded: $file"
+            fi
+          done
         env:
           DO_SPACES_KEY: ${{ secrets.DO_SPACES_KEY }}
           DO_SPACES_SECRET: ${{ secrets.DO_SPACES_SECRET }}

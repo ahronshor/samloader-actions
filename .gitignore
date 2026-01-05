@@ -1,0 +1,31 @@
+# Working directories
+downloads/
+Downloads/
+output/
+Magisk/
+Dist/
+
+# Build artifacts
+*.enc*
+*.zip
+*.tar
+*.tar.md5
+*.img
+*.lz4
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.venv/
+venv/
+
+# System files
+.DS_Store
+.samloader
+
+# Logs
+*.log
