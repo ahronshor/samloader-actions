@@ -81,13 +81,32 @@ jobs:
           aws configure set aws_secret_access_key ${{ secrets.DO_SPACES_SECRET }}
           aws configure set default.region ams3
           
+          echo "============================================"
+          echo "📤 Starting upload to DigitalOcean Spaces"
+          echo "🌐 Region: ams3 (Amsterdam)"
+          echo "🔗 Endpoint: https://ams3.digitaloceanspaces.com"
+          echo "============================================"
+          echo ""
+          
           # Upload all files from Dist directory
           for file in Dist/*; do
             if [ -f "$file" ]; then
+              filename=$(basename "$file")
+              filesize=$(ls -lh "$file" | awk '{print $5}')
+              
+              echo "📦 Uploading: $filename ($filesize)"
               aws s3 cp "$file" ${{ secrets.DO_BUCKET_PATH_FULL }} --endpoint-url https://ams3.digitaloceanspaces.com
-              echo "Uploaded: $file"
+              
+              echo "✅ Successfully uploaded: $filename"
+              echo "   File location: [YOUR_BUCKET]/$filename"
+              echo ""
             fi
           done
+          
+          echo "============================================"
+          echo "✨ All uploads completed successfully!"
+          echo "============================================"
         env:
           DO_SPACES_KEY: ${{ secrets.DO_SPACES_KEY }}
           DO_SPACES_SECRET: ${{ secrets.DO_SPACES_SECRET }}
+
