@@ -17,7 +17,14 @@ echo -e "${MINT_GREEN}[+] Running command: ${FINAL_COMMAND}${RESET}\n"
 
 # Extract model name from the command for file naming
 MODEL=$(echo "$GNSF_COMMAND" | grep -oP '(?<=-m )\S+')
+
+# Extract version - support both quoted and unquoted formats
+# Try with quotes first, then without
 VERSION=$(echo "$GNSF_COMMAND" | grep -oP '(?<=-v ")[^"]+' | cut -d'/' -f1)
+if [ -z "$VERSION" ]; then
+    # Try without quotes
+    VERSION=$(echo "$GNSF_COMMAND" | grep -oP '(?<=-v )\S+' | cut -d'/' -f1)
+fi
 
 if [ -z "$MODEL" ]; then
     echo -e "${RED}[x] Could not extract MODEL from command${RESET}\n"
@@ -26,6 +33,7 @@ fi
 
 if [ -z "$VERSION" ]; then
     echo -e "${RED}[x] Could not extract VERSION from command${RESET}\n"
+    echo -e "${YELLOW}[i] Command was: $GNSF_COMMAND${RESET}\n"
     exit 1
 fi
 
