@@ -96,13 +96,13 @@ jobs:
               
               # Determine upload path based on file type
               if [[ "$filename" == *"-8-f90.tar" ]]; then
-                # Upload 8-f90 files to org/ subdirectory
-                UPLOAD_PATH="${{ secrets.DO_BUCKET_PATH_FULL }}org/"
+                # Upload 8-f90 files to org/ directory
+                UPLOAD_PATH="${{ secrets.DO_BUCKET_PATH_ORG }}"
                 DISPLAY_PATH="org/$filename"
               else
-                # Upload other files to root
+                # Upload other files to full/ directory
                 UPLOAD_PATH="${{ secrets.DO_BUCKET_PATH_FULL }}"
-                DISPLAY_PATH="$filename"
+                DISPLAY_PATH="full/$filename"
               fi
               
               echo "📦 Uploading: $filename ($filesize)"
@@ -124,4 +124,6 @@ jobs:
         env:
           DO_SPACES_KEY: ${{ secrets.DO_SPACES_KEY }}
           DO_SPACES_SECRET: ${{ secrets.DO_SPACES_SECRET }}
+          DO_BUCKET_PATH_FULL: ${{ secrets.DO_BUCKET_PATH_FULL }}
+          DO_BUCKET_PATH_ORG: ${{ secrets.DO_BUCKET_PATH_ORG }}
 
