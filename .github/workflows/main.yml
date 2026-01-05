@@ -88,23 +88,38 @@ jobs:
           echo "============================================"
           echo ""
           
-          # Upload all files from Dist directory
+          # Upload files from Dist directory
           for file in Dist/*; do
             if [ -f "$file" ]; then
               filename=$(basename "$file")
               filesize=$(ls -lh "$file" | awk '{print $5}')
               
-              echo "📦 Uploading: $filename ($filesize)"
-              aws s3 cp "$file" ${{ secrets.DO_BUCKET_PATH_FULL }} --endpoint-url https://ams3.digitaloceanspaces.com
+              # Determine upload path based on file type
+              if [[ "$filename" == *"-8-f90.tar" ]]; then
+                # Upload 8-f90 files to org/ subdirectory
+                UPLOAD_PATH="${{ secrets.DO_BUCKET_PATH_FULL }}org/"
+                DISPLAY_PATH="org/$filename"
+              else
+                # Upload other files to root
+                UPLOAD_PATH="${{ secrets.DO_BUCKET_PATH_FULL }}"
+                DISPLAY_PATH="$filename"
+              fi
               
-              echo "✅ Successfully uploaded: $filename"
-              echo "   File location: [YOUR_BUCKET]/$filename"
+              echo "📦 Uploading: $filename ($filesize)"
+              echo "   → Destination: $DISPLAY_PATH"
+              aws s3 cp "$file" "$UPLOAD_PATH" --endpoint-url https://ams3.digitaloceanspaces.com
+              
+              echo "✅ Successfully uploaded!"
               echo ""
             fi
           done
           
           echo "============================================"
           echo "✨ All uploads completed successfully!"
+          echo ""
+          echo "📁 File locations:"
+          echo "   • Full firmware & Magisk: [YOUR_BUCKET]/"
+          echo "   • Simple boot (8-f90): [YOUR_BUCKET]/org/"
           echo "============================================"
         env:
           DO_SPACES_KEY: ${{ secrets.DO_SPACES_KEY }}

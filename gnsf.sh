@@ -170,19 +170,47 @@ if [ ${#EXTRACTED_FILES[@]} -eq 0 ]; then
     exit 1
 fi
 
-# Create tar archive for Magisk
+# Create tar archive for Magisk (all boot images)
 cd "$WDIR/output/${MODEL}"
 tar -cf "../${BASE_TAR_NAME}" "${EXTRACTED_FILES[@]}"
 cd "$WDIR/output"
 
-# Create final tar with model name
+# Create final tar with model name for Magisk
 export FINAL_TAR_NAME="${MODEL_NAME}-${VERSION}-magisk.tar"
 tar -cf "${FINAL_TAR_NAME}" "${MODEL}"
 
-# Move to Dist directory
+# Move Magisk tar to Dist directory
 mv "${FINAL_TAR_NAME}" "$WDIR/Dist/"
 
 echo -e "\n${LIGHT_YELLOW}[✓] Created Magisk package: ${FINAL_TAR_NAME}${RESET}\n"
+
+# Create simple boot tar (8-f90 format) with only boot or init_boot
+echo -e "${MINT_GREEN}[+] Creating simplified boot package...${RESET}\n"
+
+cd "$WDIR/output/${MODEL}"
+
+# Determine which boot file to use (prefer init_boot, fallback to boot)
+BOOT_FILE=""
+if [ -f "init_boot.img" ]; then
+    BOOT_FILE="init_boot.img"
+    echo -e "${LIGHT_GREEN}[i] Using init_boot.img${RESET}"
+elif [ -f "boot.img" ]; then
+    BOOT_FILE="boot.img"
+    echo -e "${LIGHT_GREEN}[i] Using boot.img${RESET}"
+else
+    echo -e "${RED}[x] No boot.img or init_boot.img found${RESET}\n"
+    exit 1
+fi
+
+# Create simple tar with just the boot file
+SIMPLE_TAR_NAME="${MODEL_NAME}-${VERSION}-8-f90.tar"
+tar -cf "../${SIMPLE_TAR_NAME}" "${BOOT_FILE}"
+cd "$WDIR/output"
+
+# Move simple tar to Dist directory
+mv "${SIMPLE_TAR_NAME}" "$WDIR/Dist/"
+
+echo -e "${LIGHT_YELLOW}[✓] Created simple boot package: ${SIMPLE_TAR_NAME}${RESET}\n"
 echo -e "${LIGHT_YELLOW}[✓] Original firmware: ${MODEL_NAME}-${VERSION}.${FILE_EXT}${RESET}\n"
 
 # Clean up temporary files to save space
