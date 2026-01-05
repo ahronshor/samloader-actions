@@ -183,10 +183,20 @@ tar -cf "${FINAL_TAR_NAME}" "${MODEL}"
 mv "${FINAL_TAR_NAME}" "$WDIR/Dist/"
 
 echo -e "\n${LIGHT_YELLOW}[✓] Created Magisk package: ${FINAL_TAR_NAME}${RESET}\n"
-echo -e "${LIGHT_YELLOW}[✓] Original firmware: ${MODEL_NAME}-${VERSION}.zip${RESET}\n"
+echo -e "${LIGHT_YELLOW}[✓] Original firmware: ${MODEL_NAME}-${VERSION}.${FILE_EXT}${RESET}\n"
+
+# Clean up temporary files to save space
+echo -e "${MINT_GREEN}[+] Cleaning up temporary files...${RESET}\n"
+rm -rf "$WDIR/downloads"
+rm -rf "$WDIR/output"
+echo -e "${LIGHT_GREEN}[✓] Cleanup completed${RESET}\n"
 
 # List all created files
 echo -e "${MINT_GREEN}[+] Files ready for upload:${RESET}\n"
 ls -lh "$WDIR/Dist/"
+
+# Show disk space
+echo -e "\n${MINT_GREEN}[+] Disk space:${RESET}\n"
+df -h | grep -E "Filesystem|/$"
 
 echo -e "\n${LIGHT_GREEN}[✓] All done!${RESET}\n"
