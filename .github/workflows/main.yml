@@ -25,11 +25,16 @@ jobs:
 
       - name: Install packages & setup
         run: |
-          sudo apt update -y > /dev/null 2>&1
-          sudo apt install python3 python3-pip python-is-python3 awscli simg2img lz4 openssl unzip -y > /dev/null 2>&1
+          # Update package lists with retry
+          for i in 1 2 3; do
+            sudo apt update -y && break || sleep 5
+          done
+          
+          # Install required packages
+          sudo apt install -y python3 python3-pip python-is-python3 awscli simg2img lz4 openssl unzip
           
           # Upgrade pip and install Python dependencies for gnsf.py
-          python3 -m pip install --upgrade pip > /dev/null 2>&1
+          python3 -m pip install --upgrade pip
           pip3 install requests pycryptodome tqdm --no-cache-dir
           
           # Verify gnsf.py can be executed
