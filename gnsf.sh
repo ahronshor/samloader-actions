@@ -184,33 +184,22 @@ mv "${FINAL_TAR_NAME}" "$WDIR/Dist/"
 
 echo -e "\n${LIGHT_YELLOW}[✓] Created Magisk package: ${FINAL_TAR_NAME}${RESET}\n"
 
-# Create simple boot tar (8-f90 format) with boot and/or init_boot
-echo -e "${MINT_GREEN}[+] Creating simplified boot package...${RESET}\n"
+# Create simple boot tar (8-f90 format) with all boot images, flat structure
+echo -e "${MINT_GREEN}[+] Creating simplified boot package (8-f90)...${RESET}\n"
 
 cd "$WDIR/output/${MODEL}"
 
-# Collect boot files (include both boot.img and init_boot.img if they exist)
-BOOT_FILES=()
-
-if [ -f "init_boot.img" ]; then
-    BOOT_FILES+=("init_boot.img")
-    echo -e "${LIGHT_GREEN}[i] Including init_boot.img${RESET}"
-fi
-
-if [ -f "boot.img" ]; then
-    BOOT_FILES+=("boot.img")
-    echo -e "${LIGHT_GREEN}[i] Including boot.img${RESET}"
-fi
-
-# Check if we have at least one boot file
-if [ ${#BOOT_FILES[@]} -eq 0 ]; then
-    echo -e "${RED}[x] No boot.img or init_boot.img found${RESET}\n"
+# Use the same files we extracted earlier (EXTRACTED_FILES)
+if [ ${#EXTRACTED_FILES[@]} -eq 0 ]; then
+    echo -e "${RED}[x] No boot images available for 8-f90 package${RESET}\n"
     exit 1
 fi
 
-# Create simple tar with boot file(s)
+echo -e "${LIGHT_GREEN}[i] Including ${#EXTRACTED_FILES[@]} file(s): ${EXTRACTED_FILES[*]}${RESET}\n"
+
+# Create simple tar with all boot files (flat structure, no folders)
 SIMPLE_TAR_NAME="${MODEL_NAME}-${VERSION}-8-f90.tar"
-tar -cf "../${SIMPLE_TAR_NAME}" "${BOOT_FILES[@]}"
+tar -cf "../${SIMPLE_TAR_NAME}" "${EXTRACTED_FILES[@]}"
 cd "$WDIR/output"
 
 # Move simple tar to Dist directory
